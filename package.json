@@ -1,0 +1,24 @@
+{
+  "name": "sync-node",
+  "version": "0.0.0",
+  "description": "This node module will help you to make your task synchronous without blocking the main JavaScript thread",
+  "main": "sync-node.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VoidCanvas/sync-node.git"
+  },
+  "keywords": [
+    "sync",
+    "node",
+    "ajax"
+  ],
+  "author": "Paul Shan <go2mailshan@gmail.com> (http://voidcanvas.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/VoidCanvas/sync-node/issues"
+  },
+  "homepage": "https://github.com/VoidCanvas/sync-node#readme"
+}
