@@ -1,69 +1,34 @@
 
 (function () {
 /**
- * ----------- Required variables------------
- */
-var syncTaskPointer = null;
-var jobQueue = [];
-
-/**
  * ----------- Helper functiosn --------------
  */
-function* syncTaskRunner() {
-	while (jobQueue.length > 0) {
-		var jobObj = jobQueue.shift();
-		yield taskHandler(jobObj);
-	}
-	syncTaskPointer = null;
-}
+	function pushJob (queue, job, context) {
+		console.log(job);
+		var monitorObject = {
+			job: job,
+			context: context,
+			isResolved : null,
+			response: null
+		}
+		
+		queue.push(monitorObject);
 
-function taskHandler (jobObj) {
-	var response = (jobObj.context)? jobObj.job.apply(jobObj.context) : jobObj.job();
-	if(response && typeof response.then === "function"){
-		response.then(function (data) {
-			jobObj.isResolved = true;
-			jobObj.response = data;
-			syncTaskPointer.next();
-		}, function (err) {
-			jobObj.isResolved = false;
-			jobObj.response = err;
-			syncTaskPointer.next();
-		})
-	}
-	else{
-		jobObj.isResolved = true;
-		jobObj.response = response;
-		syncTaskPointer.next();
-	}
-}
-
-
-function pushJob (job, context) {
-	console.log(job);
-	var monitorObject = {
-		job: job,
-		context: context,
-		isResolved : null,
-		response: null
-	}
-	
-	jobQueue.push(monitorObject);
-
-	return new Promise(function (resolve, reject) {
-		function observerFunction() {
-			if (monitorObject.isResolved!=null) {
-				Object.unobserve(monitorObject, observerFunction);
-				if(monitorObject.isResolved===true){
-					resolve(monitorObject.response);
-				}
-				else{
-					reject(monitorObject.response);
+		return new Promise(function (resolve, reject) {
+			function observerFunction() {
+				if (monitorObject.isResolved!=null) {
+					Object.unobserve(monitorObject, observerFunction);
+					if(monitorObject.isResolved===true){
+						resolve(monitorObject.response);
+					}
+					else{
+						reject(monitorObject.response);
+					}
 				}
 			}
-		}
-		Object.observe(monitorObject, observerFunction);
-	});
-}
+			Object.observe(monitorObject, observerFunction);
+		});
+	}
 
 /**
  * ------------------ Apis -------------------
@@ -75,6 +40,8 @@ function pushJob (job, context) {
 	var SyncNode = function (obj) {
 		obj = obj || {};
 		this.timeout = obj.timeout;
+		this.syncTaskPointer = null;
+		this.jobQueue = [];
 	}
 
 	/**
@@ -88,7 +55,7 @@ function pushJob (job, context) {
 		var returnObj = null;
 		if(job){
 			if(typeof job === "function"){
-				returnObj = pushJob(job);
+				returnObj = pushJob(this.jobQueue, job, context);
 				this.checkAndStartGenerator();
 			}
 		}
@@ -100,7 +67,7 @@ function pushJob (job, context) {
 	 * @return {Void} 
 	 */
 	SyncNode.prototype.checkAndStartGenerator = function() {
-		if(jobQueue.length==1 && !syncTaskPointer){
+		if(this.jobQueue.length==1 && !this.syncTaskPointer){
 			this.stepAhead();
 		}
 	}
@@ -111,11 +78,40 @@ function pushJob (job, context) {
 	 * @return {Object} GeneratorValue
 	 */
 	SyncNode.prototype.stepAhead = function () {
-		if(!syncTaskPointer)
-			syncTaskPointer = syncTaskRunner();
-		return syncTaskPointer.next();
+		if(!this.syncTaskPointer)
+			this.syncTaskPointer = this.syncTaskRunner(this.jobQueue);
+		return this.syncTaskPointer.next();
 	}
 
+	/**
+	 * This is the generator to make things synchronous
+	 * @yield {Object} returns a generator object
+	 */
+	SyncNode.prototype.syncTaskRunner = function* () {
+		var jobQueue = this.jobQueue;
+		while (jobQueue.length > 0) {
+			var jobObj = jobQueue.shift();
+			yield this.taskHandler(jobObj);
+		}
+		this.syncTaskPointer = null;
+	}
 
-	module.exports = new SyncNode();
+	SyncNode.prototype.taskHandler = function(jobObj) {
+		var response = (jobObj.context)? jobObj.job.apply(jobObj.context) : jobObj.job();
+		Promise.resolve(response).then(function (data) {
+			jobObj.isResolved = true;
+			jobObj.response = data;
+			this.syncTaskPointer.next();
+		}.bind(this), function (err) {
+			jobObj.isResolved = false;
+			jobObj.response = err;
+			this.syncTaskPointer.next();
+		}.bind(this));
+	}
+
+	module.exports = {
+		createQueue: function () {
+			return new SyncNode();
+		}
+	}
 })();
