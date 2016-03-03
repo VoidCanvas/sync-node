@@ -3,11 +3,10 @@
 /**
  * ----------- Helper functiosn --------------
  */
-	function pushJob (queue, job, context) {
+	function pushJob (queue, job) {
 		console.log(job);
 		var monitorObject = {
 			job: job,
-			context: context,
 			isResolved : null,
 			response: null
 		}
@@ -48,14 +47,13 @@
 	 * push a new job at the end of the job queue
 	 * The input `job` can be of multiple types					
 	 * @param  {Function} job [the function to be executed]
-	 * @param  {Object} context [you can pass `this` or any other context]
 	 * @return {Object}         [{jobId, promise}]
 	 */
-	SyncNode.prototype.pushJob = function (job, context) {
+	SyncNode.prototype.pushJob = function (job) {
 		var returnObj = null;
 		if(job){
 			if(typeof job === "function"){
-				returnObj = pushJob(this.jobQueue, job, context);
+				returnObj = pushJob(this.jobQueue, job);
 				this.checkAndStartGenerator();
 			}
 		}
@@ -97,7 +95,7 @@
 	}
 
 	SyncNode.prototype.taskHandler = function(jobObj) {
-		var response = (jobObj.context)? jobObj.job.apply(jobObj.context) : jobObj.job();
+		var response = jobObj.job();
 		Promise.resolve(response).then(function (data) {
 			jobObj.isResolved = true;
 			jobObj.response = data;
