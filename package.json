@@ -15,7 +15,7 @@
     "node",
     "ajax"
   ],
-  "author": "Paul Shan <go2mailshan@gmail.com> (http://voidcanvas.com)",
+  "author": "Paul Shan <paul@voidcanvas.com> (http://voidcanvas.com)",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/VoidCanvas/sync-node/issues"
