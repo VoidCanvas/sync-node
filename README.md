@@ -45,3 +45,5 @@ The concept here is to provide you with a job queue, where you can push your fun
 	        console.log("Oh no.. I'm last!!");
 	});
 
+## Note
+If you have any asynchronous function, than it must return a promise, else the queue will not come to know when the actual execution of that function is finished.
