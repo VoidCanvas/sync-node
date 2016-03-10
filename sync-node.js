@@ -4,7 +4,6 @@
  * ----------- Helper functiosn --------------
  */
 	function pushJob (queue, job) {
-		console.log(job);
 		var monitorObject = {
 			job: job,
 			isResolved : null,

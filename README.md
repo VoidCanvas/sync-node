@@ -15,10 +15,12 @@ This plugin works with a middle way, where it doesn't block anything, but still 
 The concept here is to provide you with a job queue, where you can push your functions one after another and they will be executed in the sequence they pushed. If a function is asynchronous, the next one of that will not be run till it gets resolved.
 
 ## Example
+```javascript
 	var SN = require('sync-node');
 	var pn = SN.createQueue();
 	pn.pushJob(function(){
 		return new Promise(function (resolve, reject) {
+			//I am using setTimeout to make the function async
 			setTimeout(function() {
 				console.log("I am supposed to be first!!");
 				resolve();
@@ -44,6 +46,6 @@ The concept here is to provide you with a job queue, where you can push your fun
 	pn.pushJob(function(){
 	        console.log("Oh no.. I'm last!!");
 	});
-
+```
 ## Note
 If you have any asynchronous function, than it must return a promise, else the queue will not come to know when the actual execution of that function is finished.
