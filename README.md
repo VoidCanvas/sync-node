@@ -23,13 +23,13 @@ The concept here is to provide you with a job queue, where you can push your fun
 			//I am using setTimeout to make the function async
 			setTimeout(function() {
 				console.log("I am supposed to be first!!");
-				resolve();
+				resolve("fox");
 			}, 5000);
 	
 		})
 	});
-	pn.pushJob(function(){
-	        console.log("I should come second!!");
+	pn.pushJob(function(res){
+	        console.log("I should come second!! Previous response was "+res);
 	});
 	
 	pn.pushJob(function(){

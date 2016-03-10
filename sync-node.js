@@ -40,6 +40,10 @@
 		this.timeout = obj.timeout;
 		this.syncTaskPointer = null;
 		this.jobQueue = [];
+		this.lastResponse = {
+			res:null,
+			err:null,
+		}
 	}
 
 	/**
@@ -94,14 +98,18 @@
 	}
 
 	SyncNode.prototype.taskHandler = function(jobObj) {
-		var response = jobObj.job();
+		var response = jobObj.job(this.lastResponse.res, this.lastResponse.err);
 		Promise.resolve(response).then(function (data) {
 			jobObj.isResolved = true;
 			jobObj.response = data;
+			this.lastResponse.err=null;
+			this.lastResponse.res=data;
 			this.syncTaskPointer.next();
 		}.bind(this), function (err) {
 			jobObj.isResolved = false;
 			jobObj.response = err;
+			this.lastResponse.err=err;
+			this.lastResponse.res=null;
 			this.syncTaskPointer.next();
 		}.bind(this));
 	}
