@@ -48,4 +48,4 @@ The concept here is to provide you with a job queue, where you can push your fun
 	});
 ```
 ## Note
-If you have any asynchronous function, than it must return a promise, else the queue will not come to know when the actual execution of that function is finished.
+If you have any asynchronous function, than it must return a promise, else the queue will not come to know when the actual execution of that function is finished. A better tutorial can be found in [Void Canvas](http://voidcanvas.com/sync-node/).
