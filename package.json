@@ -1,6 +1,6 @@
 {
   "name": "sync-node",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "This node module will help you to make your task synchronous without blocking the main JavaScript thread",
   "main": "sync-node.js",
   "scripts": {

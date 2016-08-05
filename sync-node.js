@@ -44,6 +44,9 @@
 			res:null,
 			err:null,
 		}
+		this.isRunning = false;
+		this.observer = null;
+		this._observerResolve = null;
 	}
 
 	/**
@@ -79,8 +82,13 @@
 	 * @return {Object} GeneratorValue
 	 */
 	SyncNode.prototype.stepAhead = function () {
-		if(!this.syncTaskPointer)
+		if(!this.syncTaskPointer){
+			this.isRunning = true;
+			this.observer = new Promise((resolve, reject)=>{
+				this._observerResolve = resolve;
+			});
 			this.syncTaskPointer = this.syncTaskRunner(this.jobQueue);
+		}
 		return this.syncTaskPointer.next();
 	}
 
@@ -95,6 +103,8 @@
 			yield this.taskHandler(jobObj);
 		}
 		this.syncTaskPointer = null;
+		this.isRunning = false;
+		this._observerResolve();
 	}
 
 	SyncNode.prototype.taskHandler = function(jobObj) {
