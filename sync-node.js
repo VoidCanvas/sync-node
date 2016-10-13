@@ -104,7 +104,7 @@
 		}
 		this.syncTaskPointer = null;
 		this.isRunning = false;
-		this._observerResolve();
+		this._observerResolve(this.lastResponse.res);
 	}
 
 	SyncNode.prototype.taskHandler = function(jobObj) {
