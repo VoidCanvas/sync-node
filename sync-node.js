@@ -1,4 +1,6 @@
 
+require("object.observe");
+
 (function () {
 /**
  * ----------- Helper functiosn --------------
