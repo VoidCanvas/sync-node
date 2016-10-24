@@ -1,6 +1,6 @@
 {
   "name": "sync-node",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "This node module will help you to make your task synchronous without blocking the main JavaScript thread",
   "main": "sync-node.js",
   "scripts": {
@@ -20,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/VoidCanvas/sync-node/issues"
   },
-  "homepage": "https://github.com/VoidCanvas/sync-node#readme"
+  "homepage": "https://github.com/VoidCanvas/sync-node#readme",
+  "dependencies": {
+    "object.observe": "^0.2.6"
+  }
 }
